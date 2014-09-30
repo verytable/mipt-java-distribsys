@@ -6,7 +6,8 @@ import java.rmi.Naming;
 public class MemoClient {
     public static void main(String[] args) {
         try {
-            MemoInterface memo = (MemoInterface) Naming.lookup("memo");
+            NotesCollectionInterface memo =
+                (NotesCollectionInterface) Naming.lookup("memo");
             memo.addNote("Hello");
             System.out.print(memo.getNotes());
         } catch (Exception ex) {

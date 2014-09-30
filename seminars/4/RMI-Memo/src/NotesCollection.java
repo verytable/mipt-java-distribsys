@@ -7,11 +7,11 @@ import java.util.ArrayList;
 /**
  * Created by arseny on 30.09.14.
  */
-class Memo extends UnicastRemoteObject implements MemoInterface {
+class NotesCollection extends UnicastRemoteObject implements NotesCollectionInterface {
 
     ArrayList<String> notes;
 
-    public Memo() throws RemoteException {
+    public NotesCollection() throws RemoteException {
         notes = new ArrayList<String>();
     }
 

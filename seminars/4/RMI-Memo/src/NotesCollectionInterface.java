@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 /**
  * Created by arseny on 30.09.14.
  */
-public interface MemoInterface extends Remote {
+public interface NotesCollectionInterface extends Remote {
 
     public void addNote(String note) throws RemoteException;
 

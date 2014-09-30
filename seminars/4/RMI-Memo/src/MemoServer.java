@@ -6,8 +6,8 @@ import java.rmi.Naming;
 class MemoServer {
     public static void main(String[] args) throws RuntimeException {
         try {
-            Memo memo = new Memo();
-            Naming.rebind("memo", memo);
+            NotesCollection notesCollection = new NotesCollection();
+            Naming.rebind("memo", notesCollection);
         } catch (Exception ex) {
             System.out.println("Failed: " + ex.getMessage());
         }
