@@ -1,7 +1,7 @@
 package test;
 
-import java.Coordinator;
-import java.ViewInfo;
+import coordinator.Coordinator;
+import coordinator.ViewInfo;
 
 /**
  * Created by arseny on 16.11.14.
@@ -51,7 +51,8 @@ public class TestCoordinator {
             // no ready servers
             if (!service.primary().equals(""))
                 throw new TestFailedException("no ready servers");
-            System.err.println("Test passed: no ready servers");
+            System.err.println(info);
+            System.err.println("Test passed: no ready servers\n");
 
             // first primary
             for (int i = 0; i < longDelay; ++i) {
@@ -60,7 +61,8 @@ public class TestCoordinator {
                 service.tick();
             }
             ++currentView;
-            test(info, srv1, "", currentView, "first primary");
+            System.err.println(info);
+            test(info, srv1, "", currentView, "first primary\n");
 
             // first backup
             for (int i = 0; i < longDelay; ++i) {
@@ -70,7 +72,8 @@ public class TestCoordinator {
                 service.tick();
             }
             ++currentView;
-            test(info, srv1, srv2, currentView, "first backup");
+            System.err.println(info);
+            test(info, srv1, srv2, currentView, "first backup\n");
 
             // primary fails, backup should take over
             service.ping(2, srv1);
@@ -80,7 +83,8 @@ public class TestCoordinator {
                 service.tick();
             }
             ++currentView;
-            test(info, srv2, "", currentView, "backup takes over");
+            System.err.println(info);
+            test(info, srv2, "", currentView, "backup takes over\n");
 
             // first server restarts, should become backup
             for (int i = 0; i < longDelay; ++i) {
@@ -90,7 +94,8 @@ public class TestCoordinator {
                 service.tick();
             }
             ++currentView;
-            test(info, srv2, srv1, currentView, "restarted server becomes backup");
+            System.err.println(info);
+            test(info, srv2, srv1, currentView, "restarted server becomes backup\n");
 
             // primary fails, third server appears,
             // backup should become primary, new server - backup
@@ -102,7 +107,8 @@ public class TestCoordinator {
                 service.tick();
             }
             ++currentView;
-            test(info, srv1, srv3, currentView, "spare server becomes backup");
+            System.err.println(info);
+            test(info, srv1, srv3, currentView, "spare server becomes backup\n");
 
             // primary quickly restarts, should not be primary anymore
             service.ping(currentView, srv1);
@@ -113,8 +119,9 @@ public class TestCoordinator {
                 service.tick();
             }
             ++currentView;
+            System.err.println(info);
             test(info, srv3, srv1, currentView, "primary reboots");
-            System.err.println("Test passed: primary reboots");
+            System.err.println("Test passed: primary reboots\n");
 
             // set up a view with just 3 as primary,
             // to prepare for the next test.
@@ -123,7 +130,8 @@ public class TestCoordinator {
                 service.tick();
             }
             ++currentView;
-            test(info, srv3, "", currentView, "primary only");
+            System.err.println(info);
+            test(info, srv3, "", currentView, "primary only\n");
 
             // backup appears but primary does not ack
             for (int i = 0; i < longDelay; ++i) {
@@ -133,7 +141,8 @@ public class TestCoordinator {
                 service.tick();
             }
             ++currentView;
-            test(info, srv3, srv1, currentView, "primary doesn't ack");
+            System.err.println(info);
+            test(info, srv3, srv1, currentView, "primary doesn't ack\n");
 
             // primary didn't ack and dies
             // check that backup is not promoted
@@ -142,7 +151,9 @@ public class TestCoordinator {
                 if (info.view == currentView + 1) break;
                 service.tick();
             }
-            test(info, srv3, srv1, currentView, "do not promote backup");
+            System.err.println(info);
+            test(info, srv3, srv1, currentView, "do not promote backup\n");
+
         } catch (TestFailedException e) {
             System.err.println("Test failed: " + e.getMessage());
         }

@@ -1,4 +1,4 @@
-package java;
+package coordinator;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
