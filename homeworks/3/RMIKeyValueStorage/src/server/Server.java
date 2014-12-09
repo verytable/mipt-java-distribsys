@@ -17,6 +17,7 @@ import java.util.Map;
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
     private CoordinatorInterface coordinator;
+    private ServerInterface backup;
     private String server;
     private ViewInfo viewInfo;
     private HashMap<String, String> data;
@@ -28,6 +29,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         } catch (NotBoundException | MalformedURLException ex) {
             System.err.println(ex.getMessage());
         }
+        backup = null;
         server = serverName;
         data = new HashMap<>();
     }
@@ -36,16 +38,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public void put(String key, String value) throws RemoteException {
         // must be invoked by primary only
         if (viewInfo.primary.equals(server)) {
-            try {
-                if (!viewInfo.backup.isEmpty()) {
-                    ServerInterface backup =
-                            (ServerInterface) Naming.lookup(viewInfo.backup);
+            if (!viewInfo.backup.isEmpty()) {
+                if (backup != null) {
                     backup.putBackup(key, value);
                 }
-                data.put(key, value);
-            } catch (NotBoundException | MalformedURLException ex) {
-                System.err.println(ex.getMessage());
             }
+            data.put(key, value);
         } else {
             throw new IncorrectOperationException("put request invoked by not" +
                                                   "a primary");
@@ -75,9 +73,16 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     public void tick() throws RemoteException {
         ViewInfo newViewInfo = coordinator.ping(viewInfo.view, server);
+        if (!newViewInfo.backup.equals(viewInfo.backup) && !newViewInfo.backup.isEmpty()) {
+            try {
+                backup = (ServerInterface) Naming.lookup(newViewInfo.backup);
+            } catch (NotBoundException | MalformedURLException ex) {
+                System.err.println(ex.getMessage());
+            }
+        }
         if (!newViewInfo.backup.equals(viewInfo.backup) &&
-                !newViewInfo.backup.isEmpty() &&
-                viewInfo.primary.equals(server)) {
+            !newViewInfo.backup.isEmpty() &&
+            viewInfo.primary.equals(server)) {
 
             viewInfo = newViewInfo;
             try {
